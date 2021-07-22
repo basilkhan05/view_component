@@ -342,9 +342,12 @@ module ViewComponent
             name.constantize.ancestors.take_while { |ancestor| ancestor != ViewComponent::Base } -
             name.constantize.included_modules
           )
+
         inherited_component_files = view_component_ancestors.map do |ancestory_component_klass|
           ancestory_component_name = ancestory_component_klass.to_s.demodulize.underscore
-          Dir["#{directory}/#{ancestory_component_name}.*{#{extensions}}"]
+          current_directory = File.dirname(ancestory_component_klass.source_location)
+
+          Dir["#{current_directory}/#{ancestory_component_name}.*{#{extensions}}"]
         end.flatten
 
         (sidecar_files - [source_location] + sidecar_directory_files + nested_component_files + inherited_component_files).uniq

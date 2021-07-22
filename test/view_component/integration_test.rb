@@ -92,6 +92,24 @@ class IntegrationTest < ActionDispatch::IntegrationTest
     end
   end
 
+  def test_namespaced_inherited_template_changes_are_reflected_on_new_request_when_cache_template_loading_is_false
+    with_new_cache do
+      get "/controller_namespaced_inherited_inline"
+      assert_select("div", "bar")
+      assert_response :success
+
+      modify_file "app/components/controller_inline_component.html.erb", "<div>Goodbye world!</div>" do
+        get "/controller_namespaced_inherited_inline"
+        assert_select("div", "Goodbye world!")
+        assert_response :success
+      end
+
+      get "/controller_namespaced_inherited_inline"
+      assert_select("div", "bar")
+      assert_response :success
+    end
+  end
+
   def test_rendering_component_in_a_controller_using_render_to_string
     get "/controller_inline_baseline"
 

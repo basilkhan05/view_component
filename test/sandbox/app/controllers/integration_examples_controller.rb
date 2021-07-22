@@ -15,6 +15,10 @@ class IntegrationExamplesController < ActionController::Base
     render(ControllerInheritedInlineComponent.new(message: "bar"))
   end
 
+  def controller_namespaced_inherited_inline
+    render(Inherited::ControllerInlineComponent.new(message: "bar"))
+  end
+
   def controller_inline_baseline
     render("integration_examples/_controller_inline", locals: { message: "bar" })
   end
