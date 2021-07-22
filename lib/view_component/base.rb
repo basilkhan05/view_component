@@ -329,7 +329,25 @@ module ViewComponent
 
         sidecar_directory_files = Dir["#{directory}/#{component_name}/#{filename}.*{#{extensions}}"]
 
-        (sidecar_files - [source_location] + sidecar_directory_files + nested_component_files).uniq
+        # Add support for inherited components that also inhertit template files
+        #
+        # e.g.
+        #
+        # class MyInheritedComponent < MyComponent
+        # end
+        #
+        # Without this, `MyInheritedComponent` will not look for `my_component.html.erb`
+        view_component_ancestors =
+          (
+            name.constantize.ancestors.take_while { |ancestor| ancestor != ViewComponent::Base } -
+            name.constantize.included_modules
+          )
+        inherited_component_files = view_component_ancestors.map do |ancestory_component_klass|
+          ancestory_component_name = ancestory_component_klass.to_s.demodulize.underscore
+          Dir["#{directory}/#{ancestory_component_name}.*{#{extensions}}"]
+        end.flatten
+
+        (sidecar_files - [source_location] + sidecar_directory_files + nested_component_files + inherited_component_files).uniq
       end
 
       # Render a component for each element in a collection ([documentation](/guide/collections)):
