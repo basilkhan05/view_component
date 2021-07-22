@@ -68,6 +68,13 @@ class ViewComponent::Base::UnitTest < Minitest::Test
 
     assert_equal(
       [
+        "#{root}/app/components/my_component.html.erb"
+      ],
+      Inherited::TemplateComponent._sidecar_files(["erb"])
+    )
+
+    assert_equal(
+      [
         "#{root}/app/components/css_sidecar_file_component.css",
         "#{root}/app/components/css_sidecar_file_component.html.erb",
       ],
